@@ -1,0 +1,17 @@
+{
+  "name": "study-buddy-fullstack",
+  "version": "1.0.0",
+  "description": "A beginner-friendly full-stack study task tracker built with Node.js, Express, and vanilla JavaScript.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
