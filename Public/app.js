@@ -1,3 +1,4 @@
+const API_BASE = "https://study-buddy-fullstack.onrender.com";
 // This file runs in the browser. It talks to our Express server through /api/tasks.
 const taskForm = document.querySelector("#task-form");
 const titleInput = document.querySelector("#task-title");
