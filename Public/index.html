@@ -1,16 +1,35 @@
+
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <meta name="description" content="Study Buddy helps students organise study tasks and track progress." />
+
+  <meta name="theme-color" content="#172554" />
+
   <title>Study Buddy — Study task tracker</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- App Icons -->
+  <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="/style.css" />
+
+  <!-- JavaScript -->
   <script src="/app.js" defer></script>
 </head>
+
 <body>
   <header class="topbar">
-    <a class="brand" href="/" aria-label="Study Buddy home"><span class="brand-icon">S</span> Study Buddy</a>
+    <a class="brand" href="/" aria-label="Study Buddy home">
+      <span class="brand-icon">S</span> Study Buddy
+    </a>
     <span class="tagline">Small steps. Steady progress.</span>
   </header>
 
@@ -18,7 +37,10 @@
     <section class="hero">
       <p class="eyebrow">YOUR STUDY SPACE</p>
       <h1>Make today <span>count.</span></h1>
-      <p class="intro">Keep your next study steps in one place. Add a task, choose a subject, and tick it off when you're done.</p>
+      <p class="intro">
+        Keep your next study steps in one place.
+        Add a task, choose a subject, and tick it off when you're done.
+      </p>
     </section>
 
     <section class="stats" aria-label="Study progress">
@@ -26,10 +48,12 @@
         <span class="stat-label">Total tasks</span>
         <strong id="total-count">0</strong>
       </article>
+
       <article class="stat-card">
         <span class="stat-label">Completed</span>
         <strong id="done-count">0</strong>
       </article>
+
       <article class="stat-card">
         <span class="stat-label">Your progress</span>
         <strong id="progress-percent">0%</strong>
@@ -38,11 +62,22 @@
 
     <section class="panel">
       <div class="section-heading">
-        <div><p class="eyebrow">PLAN IT</p><h2>Add a study task</h2></div>
+        <div>
+          <p class="eyebrow">PLAN IT</p>
+          <h2>Add a study task</h2>
+        </div>
       </div>
+
       <form id="task-form">
         <label for="task-title">Task name</label>
-        <input id="task-title" name="title" maxlength="120" placeholder="e.g. Practise 5 C questions" required />
+        <input
+          id="task-title"
+          name="title"
+          maxlength="120"
+          placeholder="e.g. Practise 5 C questions"
+          required
+        />
+
         <label for="task-subject">Subject</label>
         <select id="task-subject" name="subject">
           <option>Programming</option>
@@ -52,26 +87,53 @@
           <option>General Studies</option>
           <option>General</option>
         </select>
+
         <button class="primary-button" type="submit">+ Add task</button>
+
         <p id="form-message" class="message" role="status" aria-live="polite"></p>
       </form>
     </section>
 
     <section class="panel task-panel">
       <div class="section-heading task-heading">
-        <div><p class="eyebrow">YOUR CHECKLIST</p><h2>Study tasks</h2></div>
-        <button id="refresh-button" class="secondary-button" type="button">Refresh</button>
+        <div>
+          <p class="eyebrow">YOUR CHECKLIST</p>
+          <h2>Study tasks</h2>
+        </div>
+
+        <button id="refresh-button" class="secondary-button" type="button">
+          Refresh
+        </button>
       </div>
+
       <div id="task-list" class="task-list">
         <p class="muted">Loading your tasks…</p>
       </div>
+
       <p id="list-message" class="message" role="status" aria-live="polite"></p>
     </section>
 
     <footer>
       <p>Built for learners, one task at a time.</p>
-      <p class="api-note">Powered by your own Express API · <code>/api/tasks</code></p>
+      <p class="api-note">
+        Powered by your own Express API · <code>/api/tasks</code>
+      </p>
     </footer>
   </main>
+
+  <!-- Register Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+          .then((registration) => {
+            console.log("Study Buddy PWA registered:", registration.scope);
+          })
+          .catch((error) => {
+            console.error("Service Worker registration failed:", error);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
