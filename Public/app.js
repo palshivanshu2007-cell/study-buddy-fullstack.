@@ -1,5 +1,7 @@
+
 const API_BASE = "https://study-buddy-fullstack.onrender.com";
-// This file runs in the browser. It talks to our Express server through /api/tasks.
+
+// This file runs in the browser and communicates with your Express API.
 const taskForm = document.querySelector("#task-form");
 const titleInput = document.querySelector("#task-title");
 const subjectInput = document.querySelector("#task-subject");
@@ -15,7 +17,10 @@ function showMessage(element, message, isError = false) {
 
 function updateStats(tasks) {
   const completed = tasks.filter((task) => task.done).length;
-  const percent = tasks.length ? Math.round((completed / tasks.length) * 100) : 0;
+  const percent = tasks.length
+    ? Math.round((completed / tasks.length) * 100)
+    : 0;
+
   document.querySelector("#total-count").textContent = tasks.length;
   document.querySelector("#done-count").textContent = completed;
   document.querySelector("#progress-percent").textContent = `${percent}%`;
@@ -41,16 +46,22 @@ function renderTasks(tasks) {
     checkbox.className = "task-check";
     checkbox.checked = task.done;
     checkbox.setAttribute("aria-label", `Mark ${task.title} complete`);
-    checkbox.addEventListener("change", () => changeTaskStatus(task.id, checkbox.checked));
+
+    checkbox.addEventListener("change", () => {
+      changeTaskStatus(task.id, checkbox.checked);
+    });
 
     const copy = document.createElement("div");
     copy.className = "task-copy";
+
     const title = document.createElement("p");
     title.className = "task-title";
     title.textContent = task.title;
+
     const subject = document.createElement("span");
     subject.className = "task-subject";
     subject.textContent = task.subject;
+
     copy.append(title, subject);
 
     const deleteButton = document.createElement("button");
@@ -58,74 +69,121 @@ function renderTasks(tasks) {
     deleteButton.className = "delete-button";
     deleteButton.textContent = "Delete";
     deleteButton.setAttribute("aria-label", `Delete ${task.title}`);
-    deleteButton.addEventListener("click", () => deleteTask(task.id));
+
+    deleteButton.addEventListener("click", () => {
+      deleteTask(task.id);
+    });
 
     row.append(checkbox, copy, deleteButton);
     taskList.append(row);
   });
 }
 
+// GET: Load all tasks
 async function loadTasks() {
   showMessage(listMessage, "");
+
   try {
-    const response = await fetch("/api/tasks");
-    if (!response.ok) throw new Error("The server could not load tasks.");
+    const response = await fetch(`${API_BASE}/api/tasks`);
+
+    if (!response.ok) {
+      throw new Error("The server could not load tasks.");
+    }
+
     const data = await response.json();
+
     renderTasks(data.tasks);
     updateStats(data.tasks);
+
   } catch (error) {
-    showMessage(listMessage, "Could not connect to the API. Check that the server is running, then refresh.", true);
+    showMessage(
+      listMessage,
+      "Could not connect to the API. Check your internet connection and refresh.",
+      true
+    );
+
     taskList.replaceChildren();
   }
 }
 
+// POST: Add a new task
 taskForm.addEventListener("submit", async (event) => {
-  event.preventDefault(); // Stop the browser from reloading the page.
+  event.preventDefault();
   showMessage(formMessage, "");
 
   try {
-    const response = await fetch("/api/tasks", {
+    const response = await fetch(`${API_BASE}/api/tasks`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: titleInput.value, subject: subjectInput.value })
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        title: titleInput.value,
+        subject: subjectInput.value
+      })
     });
+
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || "Could not add this task.");
+
+    if (!response.ok) {
+      throw new Error(data.message || "Could not add this task.");
+    }
 
     titleInput.value = "";
     showMessage(formMessage, "Task added. Nice work!");
+
     await loadTasks();
     titleInput.focus();
+
   } catch (error) {
     showMessage(formMessage, error.message, true);
   }
 });
 
+// PATCH: Update task completion
 async function changeTaskStatus(id, done) {
   try {
-    const response = await fetch(`/api/tasks/${id}`, {
+    const response = await fetch(`${API_BASE}/api/tasks/${id}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ done })
     });
-    if (!response.ok) throw new Error("Could not update task.");
+
+    if (!response.ok) {
+      throw new Error("Could not update task.");
+    }
+
     await loadTasks();
+
   } catch (error) {
     showMessage(listMessage, error.message, true);
   }
 }
 
+// DELETE: Delete a task
 async function deleteTask(id) {
   try {
-    const response = await fetch(`/api/tasks/${id}`, { method: "DELETE" });
-    if (!response.ok) throw new Error("Could not delete task.");
+    const response = await fetch(`${API_BASE}/api/tasks/${id}`, {
+      method: "DELETE"
+    });
+
+    if (!response.ok) {
+      throw new Error("Could not delete task.");
+    }
+
     showMessage(listMessage, "Task deleted.");
     await loadTasks();
+
   } catch (error) {
     showMessage(listMessage, error.message, true);
   }
 }
 
+// Refresh button
 refreshButton.addEventListener("click", loadTasks);
-loadTasks(); // Fetch the starter tasks as soon as the page opens.
-                
+
+// Load tasks when the website opens
+loadTasks();
+ 
